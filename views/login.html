@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./assets/layui/css/layui.css">
+    <link rel="stylesheet" href="./assets/css/login.css">
+</head>
+<body>
+    <div class="login">
+        <h1>小猪博客管理系统</h1>
+        <form method="post">
+            <input type="text" name="username" placeholder="Username" />
+            <input type="password" name="password" placeholder="Password"  />
+            <button type="submit" id="loginBtn" class="btn btn-primary btn-block btn-large">Login In</button>
+        </form>
+    </div>
+</body>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/layui/layui.js"></script>
+<script>
+    $("#loginBtn").on('click',()=>{
+        layer.msg('login')
+        return false;
+    })
+</script>
+</html>
