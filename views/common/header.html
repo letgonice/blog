@@ -1,0 +1,58 @@
+<div class="layui-header">
+    <div class="layui-logo layui-hide-xs layui-bg-black" id="logoText">小猪博客管理系统</div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+        <!-- 移动端显示 -->
+        <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+            <i class="layui-icon layui-icon-spread-left"></i>
+        </li>
+
+        <li class="layui-nav-item layui-hide-xs"><a href="">nav 1</a></li>
+        <li class="layui-nav-item layui-hide-xs"><a href="">nav 2</a></li>
+        <li class="layui-nav-item layui-hide-xs"><a href="">nav 3</a></li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">nav groups</a>
+            <dl class="layui-nav-child">
+                <dd><a href="">menu 11</a></dd>
+                <dd><a href="">menu 22</a></dd>
+                <dd><a href="">menu 33</a></dd>
+            </dl>
+        </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+            <a href="javascript:;">
+                <img src="https://img2.baidu.com/it/u=1012304310,3936720750&fm=26&fmt=auto&gp=0.jpg"
+                    class="layui-nav-img">
+                xiaoluo
+            </a>
+            <dl class="layui-nav-child">
+                <dd><a href="">个人信息</a></dd>
+                <dd><a href="">修改密码</a></dd>
+                <dd><a href="javascript:;" id="quit">退出</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+            <a href="javascript:;">
+                <i class="layui-icon layui-icon-more-vertical"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<script src="../../assets/js/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script>
+    let logoTextV = window.localStorage.getItem('logoText')
+    $('#logoText').text(logoTextV)
+
+    $('#quit').click(async function () {
+        let result = await $.post('/userQuit')
+        console.log(result);
+        if (result.code == 1) {
+            layer.msg(result.message)
+            setTimeout(() => {
+                location.href = '/login'
+            }, 1000)
+        }
+    })
+</script>

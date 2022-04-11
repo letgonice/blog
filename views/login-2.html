@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>登录注册忘记密码页面</title>
+    <link rel="stylesheet" href="../assets/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/css/normalize.min.css">
+    <link rel="stylesheet" href="../assets/css/login-2.css">
+</head>
+
+<body>
+    <div id="formContainer" class="dwo">
+        <div class="formLeft">
+            <img src="../assets/img/avatar.png">
+        </div>
+        <div class="formRight">
+            <!-- Forgot password form -->
+            <!-- <form id="forgot" class="otherForm">
+                <header>
+                    <h1>忘记密码</h1>
+                    <p>输入邮箱找回密码</p>
+                </header>
+                <section>
+                    <label>
+                        <p>邮箱</p>
+                        <input type="email" placeholder=" ">
+                        <div class="border"></div>
+                    </label>
+                    <button type="submit">发送邮件</button>
+                </section>
+                <footer>
+                    <button type="button" class="forgotBtn">返回</button>
+                </footer>
+            </form> -->
+
+            <!-- Login form -->
+            <form id="login" action="/userLogin" method="post">
+                <header>
+                    <h1>欢迎回来</h1>
+                    <p>请先登录</p>
+                </header>
+                <section>
+                    <label>
+                        <p>用户名</p>
+                        <input type="text" placeholder=" " value="admin" name="user">
+                        <div class="border"></div>
+                    </label>
+                    <label>
+                        <p>密码</p>
+                        <input type="password" placeholder=" " name="password">
+                        <div class="border"></div>
+                    </label>
+                    <button type="submit" id="btn" onsubmit="return isSkip()">登 录</button>
+                </section>
+                <footer>
+                    <!-- <button type="button" class="forgotBtn">忘记密码？</button> -->
+                    <button type="button" class="registerBtn">新用户？</button>
+                </footer>
+            </form>
+
+            <!-- Register form -->
+            <form id="register" class="otherForm" lay_filter='register'>
+                <header>
+                    <h1>用户注册</h1>
+                    <p>注册后享受更多服务</p>
+                </header>
+                <section>
+                    <label>
+                        <p>用户名</p>
+                        <input type="text" placeholder=" " name="user" lay-verify='user' class="lay-ui-input">
+                        <div class="border"></div>
+                    </label>
+                    <label>
+                        <p>邮箱</p>
+                        <input type="email" placeholder=" " name="email" lay-verify='email' class="lay-ui-input">
+                        <div class="border"></div>
+                    </label>
+                    <label>
+                        <p>密码</p>
+                        <input type="password" placeholder=" " name="password" lay-verify='password' id="password"
+                            class="lay-ui-input">
+                        <div class="border"></div>
+                    </label>
+                    <label>
+                        <p>重复密码</p>
+                        <input type="password" placeholder=" " name="reusepassord" lay-verify='reusepassord'
+                            class="lay-ui-input">
+                        <div class="border"></div>
+                    </label>
+                    <button type="submit" lay-submit lay-filter="registerbtn">注 册</button>
+                </section>
+                <footer>
+                    <button type="button" class="registerBtn">返回</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/layui/layui.js"></script>
+    <!-- <script src="js/script.js"></script> -->
+    <script>
+        $(function () {
+            $('.forgotBtn').click(function () {
+                $('#forgot').toggleClass('toggle')
+            })
+
+            $('.registerBtn').click(function () {
+                $('#register, #formContainer').toggleClass('toggle')
+            })
+        })
+        layui.use('form', function () {
+            var form = layui.form;
+            var layer = layui.layer;
+            var $ = layui.jquery;
+            form.verify({
+                user: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (!new RegExp("/^[A-z]\d{7,16}$/").test(value)) {
+                        return '用户名必须以字母开头并且不小于8位';
+                    }
+                },
+                email: function (value, item) {
+                    if (!new RegExp("/^\w{9}@[e-z]{2,6}\.[conm]{2,3}$/").test(value)) {
+                        return '不满足邮箱格式';
+                    }
+                },
+                password: function (value, item) {
+                    if (!new RegExp(("/^.{8,}$/").test(value) && /\!|\@|\#|\$|\%|\^|\&|\*/.test(value))) {
+                        return '不满足邮箱格式';
+                    }
+                },
+                reusepassord: function (value, item) {
+                    let password = $('#password').val()
+                    if (value !== password) {
+                        return '两次密码不相同';
+                    }
+                }
+                // //我们既支持上述函数式的方式，也支持下述数组的形式
+                // //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+                // , pass: [
+                //     /^[\S]{6,12}$/
+                //     , '密码必须6到12位，且不能出现空格'
+                // ]
+            });
+            form.on('submit(registerbtn)', function (data) {
+                alert(1)
+                return false;
+            })
+        });
+
+    </script>
+</body>
+
+</html>

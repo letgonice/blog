@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./assets/layui/css/layui.css">
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        {{include "../views/common/header.html" }}
+
+        <div class="layui-side layui-bg-black">
+            {{include "../views/common/menu.html" }}
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;">系统设置主体区域.</div>
+            <form class="layui-form" id="addForm" lay-filter="systemsetup">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">博客名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="val" id="val" lay-verify="required" placeholder="请输入"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formUpdSys">立即修改</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {{include "../views/common/base.html" }}
+    </div>
+</body>
+<script src="../assets/layui/layui.js"></script>
+<script>
+    layui.use('form', function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        let logoTextV = window.localStorage.getItem('logoText')
+        let id = window.localStorage.getItem('id')
+        form.val("systemsetup", {
+            'val': logoTextV
+        });
+        // console.log();
+        form.on('submit(formUpdSys)', function (data) {
+            if ($('#logoText').text() === $('#val').val()) {
+                layer.msg('名字未变动')
+                return false
+            }
+            var data1 = form.val("systemsetup");
+            let { val } = data1
+            let datas = {
+                val,
+                id: id
+            }
+            $.ajax({
+                type: 'post',
+                url: '/updblogname',
+                data: datas
+            }).then((res) => {
+                if (res.code === 1) {
+                    window.localStorage.setItem('logoText', val)
+                    $('#logoText').text(val)
+                    layer.msg('编辑成功')
+                }
+            })
+            return false;
+        })
+    });
+</script>
+
+</html>
