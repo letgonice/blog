@@ -15,6 +15,7 @@ app.set('views', __dirname + '/views/');
 app.engine('html', express_template);
 app.set('view engine', 'html');
 app.use('/assets', express.static(path.join(__dirname, 'assets')))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 app.use(cookieParser())
 //初始化session
 app.use(session({
@@ -23,11 +24,10 @@ app.use(session({
   cookie:{  
     path:'/',
     secure:false,//默认false,true只很对https
-    maxAge:60000*5,//设置有效期，60000是毫秒值
+    maxAge:3600000*72,//设置有效期，60000是毫秒值
   }
 }));
 app.use((req, res,next) => {
-  console.log(req.path);
   let reqPath = req.path.toLowerCase();
   let loginRouter = ['/login', '/formlogin']
   if (loginRouter.includes(reqPath)) {

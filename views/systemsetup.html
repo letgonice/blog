@@ -8,6 +8,29 @@
     <title>Document</title>
     <link rel="stylesheet" href="./assets/layui/css/layui.css">
 </head>
+<style>
+    .hide {
+        display: none;
+    }
+
+    .inputLogo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 50px;
+        background-color: #2e92d2;
+        color: white;
+        line-height: 38px;
+        /* display: inline-block; */
+        border-radius: 5px;
+        height: 38px;
+    }
+
+    .inputLogo:hover {
+        background-color: #33aba0;
+    }
+</style>
 
 <body>
     <div class="layui-layout layui-layout-admin">
@@ -30,9 +53,24 @@
                     </div>
                 </div>
 
+                <div class="layui-upload" style="padding-bottom: 15px;">
+                    <label class="layui-form-label">上传图片</label>
+                    <div class="layui-upload-list">
+                        <div class="inputLogo" id="inputLogo"><i class="iconfont icon-tupianshangchuan"
+                                style="font-size: 30px;"></i>
+                        </div>
+                        <input type="file" class="hide" id="hidefile" name="photologo">
+                        <div style="border-radius: 4px; overflow: hidden;">
+                            <label class="layui-form-label"></label>
+                            <img class="previewlogo"
+                                style="width: 100px; height: 100px;margin-top:10px ; border-radius: 4px;"></img>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="layui-form-item">
                     <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="formUpdSys">立即修改</button>
+                        <button class="layui-btn" lay-submit lay-filter="formUpdSys" type="button">立即修改</button>
                         <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                 </div>
@@ -42,7 +80,7 @@
         {{include "../views/common/base.html" }}
     </div>
 </body>
-<script src="../assets/layui/layui.js"></script>
+<!-- <script src="../assets/layui/layui.js"></script> -->
 <script>
     layui.use('form', function () {
         var form = layui.form;
@@ -50,29 +88,59 @@
         var $ = layui.jquery;
         let logoTextV = window.localStorage.getItem('logoText')
         let id = window.localStorage.getItem('id')
+        let blogLogo = window.localStorage.getItem('blogLogo')
+        console.log(blogLogo);
         form.val("systemsetup", {
             'val': logoTextV
         });
+        $('#blogLogoimg').attr('src', blogLogo)
+        $('.previewlogo').attr('src', blogLogo)
+
+        let hideFile = document.getElementById('hidefile')
+
+        function files() {
+            hideFile.onchange = function () {
+                let file = this.files[0]
+                let reader = new FileReader()
+                reader.readAsDataURL(file)
+                reader.onload = function (e) {
+                    // preview.setAttribute("src", e.target.result)
+                    $('.previewlogo').attr("src", e.target.result)
+                }
+            }
+        }
+
+        $('#inputLogo').click(function () {
+            $('#hidefile').click()
+            files()
+        })
+
         // console.log();
         form.on('submit(formUpdSys)', function (data) {
-            if ($('#logoText').text() === $('#val').val()) {
-                layer.msg('名字未变动')
-                return false
-            }
             var data1 = form.val("systemsetup");
+            console.log(data1.val);
+            // console.log(data1);
             let { val } = data1
-            let datas = {
-                val,
-                id: id
-            }
+            let fromDate = new FormData($('#addForm')[0])
+            // let datas = {
+            //     val,
+            //     id: id
+            // }
+            fromDate.append('id', id)
+            fromDate.append('blogLogo', blogLogo)
             $.ajax({
                 type: 'post',
                 url: '/updblogname',
-                data: datas
+                data: fromDate,
+                contentType: false,
+                processData: false
             }).then((res) => {
                 if (res.code === 1) {
                     window.localStorage.setItem('logoText', val)
+                    window.localStorage.setItem('blogLogo', res.newpic)
                     $('#logoText').text(val)
+                    $('#blogLogoimg').attr('src', res.newpic)
+                    $('.previewlogo').attr('src', res.newpic)
                     layer.msg('编辑成功')
                 }
             })

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>德德后台管理系统</title>
+    <link rel="stylesheet" href="./assets/layui/css/layui.css">
+    <link href="https://cdn.jsdelivr.net/npm/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_3324354_uptvjfb4l9m.css">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .photo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+            height: 50px;
+            background-color: #2e92d2;
+            color: white;
+            line-height: 38px;
+            /* display: inline-block; */
+            border-radius: 5px;
+            height: 38px;
+        }
+
+        .photo:hover {
+            background-color: #33aba0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        {{include "../views/common/header.html" }}
+
+        <div class="layui-side layui-bg-black">
+            {{include "../views/common/menu.html" }}
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <h1 style="text-align: center;">文章编辑页面</h1>
+            <form class="layui-form" id="echoArt" lay-filter="echoArt">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" id="title" lay-verify="required" autocomplete="off"
+                            placeholder="请输入名称" class="layui-input ">
+                    </div>
+                </div>
+
+                <div class="layui-input-inline" style="position: relative; z-index: 9999999;">
+                    <label class="layui-form-label">分类</label>
+                    <div class="layui-input-block">
+                        <select name=" cate_id" id="cate_id" lay-filter="cate_id">
+                            <option value="0">未分类</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="status" value="1" title="通过" checked>
+                        <input type="radio" name="status" value="0" title="待审核">
+                    </div>
+                </div>
+
+                <div class="layui-upload" style="padding-bottom: 15px;">
+                    <label class="layui-form-label">上传图片</label>
+                    <div class="layui-upload-list">
+                        <div class="photo" id="photo" name="photo"><i class="iconfont icon-tupianshangchuan"
+                                style="font-size: 30px;"></i>
+                        </div>
+                        <input type="file" class="hide" id="hidefile" name="photo">
+                        <div style="border-radius: 4px; overflow: hidden;">
+                            <label class="layui-form-label"></label>
+                            <img class="preview"
+                                style="width: 100px; height: 100px;margin-top:10px ; border-radius: 4px;"></img>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text" style="position: relative; z-index:999999;">
+                    <label class="layui-form-label">文章内容</label>
+                    <div class="layui-input-block">
+                        <div id="toolbar-container" style="border: 1px solid #ccc;"></div>
+                        <div id="editor-container" style="border: 1px solid #ccc;border-top: none;height: 200px;"></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="editAtrBtn" type="button"
+                            id="editAtrBtn">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+
+            <button id="btn">ffff</button>
+        </div>
+
+        <!-- <div class="layui-footer">
+            底部固定区域
+        </div> -->
+    </div>
+    <script src="../../assets/js/jquery.min.js"></script>
+
+    <!-- <script src="../assets/layui/layui.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@wangeditor/editor@latest/dist/index.min.js"></script>
+
+    <script>
+
+
+        let hideFile = document.getElementById('hidefile')
+        let preview = document.querySelector('.preview')
+
+        function files() {
+            hideFile.onchange = function () {
+                let file = this.files[0]
+                let reader = new FileReader()
+                reader.readAsDataURL(file)
+                reader.onload = function (e) {
+                    preview.setAttribute("src", e.target.result)
+                }
+            }
+        }
+
+        $('#photo').click(function () {
+            $('#hidefile').click()
+            files()
+        })
+
+
+
+        layui.use('form', function () {
+            var form = layui.form;
+            var layer = layui.layer;
+            var $ = layui.jquery;
+            var laydate = layui.laydate
+
+            const reg = /\?id=(\d+)/
+            const [, id] = location.search.match(reg)
+
+            let editor
+            function initializeWanTor(concent) {
+                var E = window.wangEditor; // 全局变量
+                // 创建编辑器
+                editor = E.createEditor({
+                    selector: '#editor-container',
+                    // config: editorConfig,
+                    html: concent,
+                    mode: 'default' // 或 'simple' 参考下文
+                })
+                // 创建工具栏
+                const toolbar = E.createToolbar({
+                    editor,
+                    selector: '#toolbar-container',
+                    mode: 'default' // 或 'simple' 参考下文
+                })
+            }
+
+            $.ajax({
+                type: 'get',
+                url: '/cateRender'
+            }).then(res => {
+                let strHtml = ''
+                strHtml += `<option value="0">未分类</option>`;
+                res.data.forEach(function (item) {
+                    let { cate_id, cate_name } = item
+                    strHtml += `<option value="${cate_id}">${cate_name}</option>`
+                    console.log(item);
+                })
+                console.log(strHtml);
+                $('#cate_id').html(strHtml)
+                form.render('select');
+            })
+
+            let oldpic
+            $.ajax({
+                type: 'get',
+                url: `/echoArticle?id=${id}`,
+            }).then(res => {
+                // console.log(res);
+                res.forEach(item => {
+                    console.log(item);
+                    let { title, pic, content, author, status, cate_id, cate_name } = item
+                    console.log(cate_name);
+                    // status = status == 1 ? true : false
+                    $(".preview").attr('src', `${pic}`)
+                    form.val("echoArt", {
+                        title,
+                        status,
+                        author,
+                        cate_id
+                    });
+                    console.log($('#cate_id')[0]);
+                    // $('#cate_id')[0].val(cate_name)
+                    // console.log($('#cate_id'));
+                    initializeWanTor(content)
+                    oldpic = pic
+                })
+            })
+
+
+
+
+            form.on('submit(editAtrBtn)', function (data) {
+                let formData = new FormData(document.getElementById('echoArt'))
+                content = editor.getHtml()
+                formData.append('content', content)
+                formData.set('id', id)
+                formData.set('oldpic', oldpic)
+                console.log(content);
+                $.ajax({
+                    type: 'post',
+                    url: '/editArtCon',
+                    data: formData,
+                    contentType: false,
+                    processData: false
+                }).then(res => {
+                    console.log(res.code);
+                    if (res.code == 10000) {
+                        layer.msg('编辑成功')
+                        setTimeout(function () {
+                            location.href = '/article'
+                        }, 1000)
+                    }
+                })
+                return false;
+            })
+        });
+
+    </script>
+
+</body>
+
+</html>

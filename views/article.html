@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>德德后台管理系统</title>
     <link rel="stylesheet" href="./assets/layui/css/layui.css">
+    <link rel="stylesheet" href="/assets/dist/css/lightbox.min.css">
+    <!-- <link rel="stylesheet" href="/assets/layui/css/modules/layer/default/myskin/style.css"> -->
+    <style>
+        body .demo-class .layui-layer-btn .layui-layer-btn1 {
+            background: #D3FBD8;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,43 +23,166 @@
             {{include "../views/common/menu.html" }}
         </div>
 
-        <div class="layui-body">
+
+        <div class="layui-body" style="top: 50px;">
+            <div class="searchBox layer-body" style="position: absolute;z-index: 99999; top: 20px; left: 80px;">
+                <div class="layui-inline">
+                    <input class="layui-input" name="id" id="keyword" autocomplete="off" placeholder="输入标题搜索"
+                        style="height:32px">
+                </div>
+                <button class="layui-btn layui-btn-sm" data-type="reload" style="margin-left: -4px;"
+                    id="search">搜索</button>
+            </div>
             <!-- 内容主体区域 -->
-            <div style="padding: 15px;">内容主体区域.</div>
+            <table id="article" lay-filter="article" style="text-align: center;"></table>
         </div>
 
-        <div class="layui-footer">
-            <!-- 底部固定区域 -->
-            底部固定区域
-        </div>
+        <!-- <div class="layui-footer"> -->
+        <!-- 底部固定区域 -->
+        <!-- 底部固定区域/ -->
+        <!-- </div> -->
     </div>
-    <script src="./assets/layui/layui.js"></script>
+    <script type="text/html" id="artAdd">
+<div style="display: flex;align-items: flex-end;">
+        <div class="layui-btn-container demoTable" >
+        <button class="layui-btn layui-btn-sm" lay-event="add" data-type="add" id="addArt">添加</button>
+        </div>
+        <!-- <div class="searchBox layer-body">
+            <div class="layui-inline">
+              <input class="layui-input" name="id" id="keyword" autocomplete="off" placeholder="输入标题搜索"style="height:32px">
+            </div>
+            <button class="layui-btn layui-btn-sm" data-type="reload" style="margin-left: -4px;" id="search">搜索</button>
+          </div> -->
+</div>
+    </script>
+    <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="examine" style="background-color: #889FA5;">查看内容</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <!-- <script src="./assets/layui/layui.js"></script> -->
+    <script src="/assets/dist/js/lightbox-plus-jquery.min.js"></script>
     <script>
         //JS 
         layui.use(['element', 'layer', 'util'], function () {
             var element = layui.element
                 , layer = layui.layer
                 , util = layui.util
-                , $ = layui.$;
+                , $ = layui.$,
+                table = layui.table
+            layer.config({
+                extend: '/default/myskin/style.css', //加载您的扩展样式
+                // skin: 'layer-ext-yourskin'
+            });
+            function applyTable() {
+                table.render({
+                    toolbar: '#artAdd'
+                    , elem: '#article'
+                    , url: '/getArt' //数据接口
+                    , page: true //开启分页
+                    , size: 'lg'
+                    , limit: 8
+                    , cols: [[ //表头
+                        { type: 'checkbox', fixed: 'left' },
+                        {
+                            field: 'id', title: '序号', width: 80, sort: true, fixed: 'left'
+                        }
+                        , { field: 'title', title: '标题', width: 120, sort: true, style: 'font-weight:700' }
+                        , {
+                            field: 'pic', title: '封面图', width: 120, templet: function (d) {
+                                return `<a class="example-image-link" href="${d.pic}"
+                                    data-lightbox="example-set" data-title="${d.title}"><img 
+                                        class="example-image" src="${d.pic}" alt=""/></a>`
+                            }
+                        }
+                        // , {
+                        //     field: 'content', title: '内容', width: 120, sort: true, templet: function (d) {
+                        //         // console.log(typeof d.content);
+                        //         // if (d.content.length > 10) {
+                        //         //     // return d.content = d.content.splice(0, 10) + '...'
 
-            //头部事件
-            util.event('lay-header-event', {
-                //左侧菜单事件
-                menuLeft: function (othis) {
-                    layer.msg('展开左侧菜单的操作111', { icon: 0 });
-                }
-                , menuRight: function () {
-                    layer.open({
-                        type: 1
-                        , content: '<div style="padding: 15px;">处理右侧面板的操作234</div>'
-                        , area: ['260px', '100%']
-                        , offset: 'rt' //右上角
-                        , anim: 5
-                        , shadeClose: true
+                        //         // } else {
+                        //         // }
+                        //         return d.content + '...';
+                        //     }
+                        // }
+                        , { field: 'username', title: '作者', width: 110, style: 'color:#3B3B3B' }
+                        , {
+                            field: 'statusText', title: '状态', width: 120, sort: true, templet: function (d) {
+                                let datas = ''
+                                if (d.statusText == '审核通过') {
+                                    datas = `<span style=color:green>${d.statusText}</span>`
+                                } else {
+                                    datas = `<span style=color:red>${d.statusText}</span>`
+                                }
+                                return datas
+                            }
+                        }
+                        , { field: 'add_date', title: '添加时间', width: 160, templet: '#titleTpl', sort: true, style: "color:blue" }
+                        , { field: 'cate_name', title: '分类名', width: 90, style: 'color:#00C6CF' }
+                        , { field: 'right', title: '操作', minWidth: 100, align: 'center', toolbar: '#barDemo' }
+                    ]],
+                });
+            }
+            applyTable()
+
+            // $('#article').on('$(td)')
+            table.on('tool(article)', function (obj) {
+                let { id, pic } = obj.data;
+                if (obj.event === 'del') {
+                    // console.log(obj.data);
+                    console.log(id);
+                    console.log(pic);
+                    layer.confirm('真的删除行么', async function (index) {
+                        obj.del();
+                        layer.close(index);
+                        $.ajax({
+                            type: 'post',
+                            url: '/delArt',
+                            data: { id, pic }
+                        }).then((res) => {
+                            if (res.code === 10000) {
+                                console.log(res);
+                                applyTable()
+                                layer.msg(res.message)
+                            }
+                        })
                     });
+                } else if (obj.event === 'examine') {
+                    // console.log(obj.data);
+                    // let { id } = obj.data;
+                    layer.open({
+                        type: 1,
+                        title: false,
+                        closeBtn: 0,
+                        shadeClose: true,
+                        area: ['600px', '400px'],
+                        skin: 'demo-class',
+                        content: `<div style='padding:20px'>
+                                        <h2 style="text-align: center;"><b>${obj.data.title}</b></h2>
+                                        <div>${obj.data.content}</div>
+                                </div>`
+                    });
+                } else if (obj.event === 'edit') {
+                    location.href = `/editArticle?id=${id}`
                 }
             });
 
+            $('#addArt').click(function () {
+                location.href = '/Art';
+            })
+            // $('#keyword').on('keyup', function () {
+            //     let keyword = $("#keyword").val()
+            //     table.reload('article', {
+            //         where: { keyword } //设定异步数据接口的额外参数
+            //     });
+            // })
+            $('#search').on('click', function () {
+                let keyword = $("#keyword").val()
+                table.reload('article', {
+                    where: { keyword } //设定异步数据接口的额外参数
+                });
+            });
         });
     </script>
 </body>

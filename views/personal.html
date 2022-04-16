@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../assets/layui/css/layui.css">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .photo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 40px;
+            background-color: #009688;
+            color: white;
+            line-height: 38px;
+            /* display: inline-block; */
+            border-radius: 2px;
+            height: 38px;
+        }
+
+        .photo:hover {
+            background-color: #33aba0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h1 style="text-align: center;">个人信息</h1> -->
+    <form class="layui-form" id="updUser" lay-filter="updUser">
+        <!-- <div> -->
+        <div class="layui-form-item" style="padding-top:15px;">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="username" id="username" lay-verify="required" autocomplete="off"
+                    class="layui-input" disabled='disabled'>
+            </div>
+        </div>
+
+        <div class="layui-upload" style="padding-bottom: 15px;">
+            <label class="layui-form-label">上传图片</label>
+            <div class="layui-upload-list">
+                <div class="photo" id="photo" name="photo">照片</div>
+                <input type="file" class="hide" id="hidefile">
+                <div style="border-radius: 4px; overflow: hidden;">
+                    <label class="layui-form-label"></label>
+                    <img class="preview"
+                        style="width: 100px; height: 100px;margin-top:10px ; border-radius: 50%;"></img>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">个人介绍</label>
+            <div class="layui-input-inline">
+                <textarea name="intro" id="intro" required lay-verify="required" placeholder="请输入"
+                    class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formAddList" id="btn"
+                    onclick="return lll()">保存</button>
+                <!-- <button type="reset" class="layui-btn layui-btn-primary">重置</button> -->
+            </div>
+        </div>
+        <!-- </div> -->
+    </form>
+</body>
+<script src="../../assets/js/jquery.min.js"></script>
+<script src="../assets/layui/layui.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script>
+    let { username, intro, avatar, pic } = JSON.parse(Cookies.get('userLogin'))[0]
+    function lll() {
+        return false;
+    }
+    layui.use(['upload', 'element', 'layer'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer,
+            form = layui.form
+
+        let { username, id, intro, avatar } = JSON.parse(Cookies.get('userLogin'))[0]
+        $('#username').val(username)
+        $('#intro').val(intro)
+        $('.preview').attr('src', pic)
+        let hideFile = document.getElementById('hidefile')
+        let preview = document.querySelector('.preview')
+        console.log(hideFile);
+        $('#photo').click(function () {
+            $('#hidefile').click()
+            files()
+        })
+        function files() {
+            hideFile.onchange = function () {
+                let file = this.files[0]
+                let reader = new FileReader()
+                reader.readAsDataURL(file)
+                reader.onload = function (e) {
+                    preview.setAttribute("src", e.target.result)
+                }
+            }
+        }
+        $('#btn').click(async function () {
+            let file = hideFile.files[0]
+            console.log(file);
+            // let formData = new FormData(document.getElementById('updUser'))
+            let formData = new FormData()
+            formData.append('photo', file)
+            formData.append('username', $('#username').val())
+            formData.append('intro', $('#intro').val())
+            $.ajax({
+                type: 'post',
+                url: `http://127.0.0.1:3400/updUser/${id}`,
+                data: formData,
+                contentType: false,
+                processData: false,
+            }).then((res) => {
+                console.log(res);
+                if (res.code == 1) {
+                    $('#userimg').attr('src', res.newName)
+                    layer.msg('保存成功')
+                    setTimeout(function () {
+                        parent.location.href = '/'
+                    }, 1000)
+                } else {
+                    layer.msg('保存失败')
+                }
+            })
+            // close('#btn')
+            return false;
+        })
+    })
+
+</script>
+
+</html>

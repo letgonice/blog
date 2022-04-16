@@ -1,5 +1,23 @@
+<script src="../../assets/js/jquery.min.js"></script>
+<script src="./assets/layui/layui.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<link rel="stylesheet" href="http://at.alicdn.com/t/font_3324354_uptvjfb4l9m.css">
+<style>
+    .auto {
+        width: 360px;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
 <div class="layui-header">
-    <div class="layui-logo layui-hide-xs layui-bg-black" id="logoText">小猪博客管理系统</div>
+    <div class="layui-logo layui-hide-xs layui-bg-black"
+        style="display: flex; align-items: center; justify-content: center;">
+        <img src alt="" id="blogLogoimg"
+            style="width: 35px;height: 35px; position: relative; border: none; border-radius: 50%;">
+        <div id="logoText"></div>
+    </div>
     <!-- 头部区域（可配合layui 已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
         <!-- 移动端显示 -->
@@ -23,12 +41,12 @@
         <li class="layui-nav-item layui-hide layui-show-md-inline-block">
             <a href="javascript:;">
                 <img src="https://img2.baidu.com/it/u=1012304310,3936720750&fm=26&fmt=auto&gp=0.jpg"
-                    class="layui-nav-img">
-                xiaoluo
+                    class="layui-nav-img" id="userimg">
+                <span id="loginName">请登录</span>
             </a>
             <dl class="layui-nav-child">
-                <dd><a href="">个人信息</a></dd>
-                <dd><a href="">修改密码</a></dd>
+                <dd><a href="javascript:;" id="Personal">个人信息</a></dd>
+                <dd><a href="javascript:;" id="btnpassword">修改密码</a></dd>
                 <dd><a href="javascript:;" id="quit">退出</a></dd>
             </dl>
         </li>
@@ -39,12 +57,18 @@
         </li>
     </ul>
 </div>
-<script src="../../assets/js/jquery.min.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+
 <script>
     let logoTextV = window.localStorage.getItem('logoText')
-    $('#logoText').text(logoTextV)
+    let blogLogo = window.localStorage.getItem('blogLogo')
 
+    $('#logoText').text(logoTextV)
+    $('#blogLogoimg').attr('src', blogLogo)
+    //获取到用户信息
+    let { username, intro, avatar, pic } = JSON.parse(Cookies.get('userLogin'))[0]
+    $('#loginName').text(username)
+    $('#userimg').attr('src', pic)
+    //退出登录
     $('#quit').click(async function () {
         let result = await $.post('/userQuit')
         console.log(result);
@@ -55,4 +79,28 @@
             }, 1000)
         }
     })
+
+    //修改个人信息
+    $('#Personal').click(function () {
+        layer.open({
+            type: 2,
+            title: '个人信息',
+            area: ['500px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: '/personal'
+        });
+    })
+
+    $('#btnpassword').click(function () {
+        layer.open({
+            type: 2,
+            title: '修改个人密码',
+            area: ['500px', '450px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: '/passwordpage'
+        });
+    })
+
 </script>
