@@ -3,15 +3,17 @@ let app = express()
 let path = require('path')
 //用来获取cookie的值
 const cookieParser = require('cookie-parser')
+let cors =require('cors')
 //此模块可以操作session和cookie
 const session = require('express-session')
 let router = require('./router/router.js')
+let apiRouter = require('./router/apiRouter.js')
 const artTemplate = require('art-template');
 const express_template = require('express-art-template');
+app.use(cors())
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.set('views', __dirname + '/views/');
-// app.set('views',path.join(__dirname , '/'))
 app.engine('html', express_template);
 app.set('view engine', 'html');
 app.use('/assets', express.static(path.join(__dirname, 'assets')))
@@ -27,6 +29,11 @@ app.use(session({
     maxAge:3600000*72,//设置有效期，60000是毫秒值
   }
 }));
+
+app.use('/api', apiRouter, (req, res) => {
+  console.log('呜呜呜呜');
+})
+
 app.use((req, res,next) => {
   let reqPath = req.path.toLowerCase();
   let loginRouter = ['/login', '/formlogin']
@@ -41,9 +48,8 @@ app.use((req, res,next) => {
   }
 })
 
-
-
 app.use(router)
+
 
 
 app.listen(3400,() => {

@@ -112,7 +112,6 @@ res.json({
 
 //删除文章
 articleController.delArt = async (req, res) => {
-console.log(req.body);
 let { id,pic } = req.body;
 let succeedData = {
     code: 10000,
@@ -126,9 +125,7 @@ let sql = `delete from article where id=${id}`
 let result = await query(sql)
 if (result.affectedRows > 0) {
     let paths = path.join(path.dirname(__dirname),pic)
-    console.log(paths);
     fs.unlink(paths, (err) => {
-        console.log(err);
     })
     res.json(succeedData)
 } else {
@@ -166,7 +163,6 @@ if (req.file) {
     })
     let sql = `insert into article(title,content,author ,status,pic,add_date,cate_id)values('${title}','${content}','${author}','${status}','${newName}','${add_date}',${classify})`
     let rows = await query(sql);
-    console.log(rows);
     res.json(succeedData)
 } else {
     res.json(errData)
@@ -177,7 +173,6 @@ articleController.editArticle = async (req, res) => {
     res.render(`${viewsPath}/editArticle.html`)
 }
 articleController.echoArticle = async (req, res) => {
-    console.log(req.query);
     const { id } = req.query;
     let sql = `SELECT t1.* ,t2.cate_name from article t1 LEFT JOIN  category t2 on t1.cate_id = t2.cate_id where id = ${id}`
     let result = await query(sql)
@@ -185,8 +180,6 @@ articleController.echoArticle = async (req, res) => {
 }
 
 articleController.editArtCon = async (req, res) => {
-    console.log(req.file);
-    console.log(req.body);
     let {title,content,status,cate_id,oldpic ,id} = req.body;
     let succeedData = {
         code: 10000,
@@ -209,12 +202,10 @@ articleController.editArtCon = async (req, res) => {
             }
         })
         sql = `update article set title = '${title}',content = '${content}',status ='${status}',pic='${newName}' where id =${id}`
-        // let sql = `insert into article(title,content,author ,status,pic,add_date,cate_id)values('${title}','${content}','${author}','${status}','${newName}','${add_date}',${classify})`
         let rows = await query(sql);
         const picPath = path.join(path.dirname(__dirname), oldpic);
         fs.unlink(picPath, () => { });
         if (rows.affectedRows > 0) {
-            console.log(rows);
             res.json(succeedData)
         } else {
             res.json(errData)
@@ -223,7 +214,6 @@ articleController.editArtCon = async (req, res) => {
         sql = `update article set title = '${title}',content = '${content}',status ='${status}' where id =${id}`
         let rows = await query(sql);
         if (rows.affectedRows > 0) {
-            console.log(rows);
             res.json(succeedData)
         } else {
             res.json(errData)

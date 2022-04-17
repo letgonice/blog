@@ -176,9 +176,7 @@
                 res.data.forEach(function (item) {
                     let { cate_id, cate_name } = item
                     strHtml += `<option value="${cate_id}">${cate_name}</option>`
-                    console.log(item);
                 })
-                console.log(strHtml);
                 $('#cate_id').html(strHtml)
                 form.render('select');
             })
@@ -188,11 +186,8 @@
                 type: 'get',
                 url: `/echoArticle?id=${id}`,
             }).then(res => {
-                // console.log(res);
                 res.forEach(item => {
-                    console.log(item);
                     let { title, pic, content, author, status, cate_id, cate_name } = item
-                    console.log(cate_name);
                     // status = status == 1 ? true : false
                     $(".preview").attr('src', `${pic}`)
                     form.val("echoArt", {
@@ -201,9 +196,6 @@
                         author,
                         cate_id
                     });
-                    console.log($('#cate_id')[0]);
-                    // $('#cate_id')[0].val(cate_name)
-                    // console.log($('#cate_id'));
                     initializeWanTor(content)
                     oldpic = pic
                 })
@@ -218,7 +210,6 @@
                 formData.append('content', content)
                 formData.set('id', id)
                 formData.set('oldpic', oldpic)
-                console.log(content);
                 $.ajax({
                     type: 'post',
                     url: '/editArtCon',
@@ -226,7 +217,6 @@
                     contentType: false,
                     processData: false
                 }).then(res => {
-                    console.log(res.code);
                     if (res.code == 10000) {
                         layer.msg('编辑成功')
                         setTimeout(function () {

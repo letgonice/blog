@@ -39,7 +39,6 @@
         , $ = layui.$;
 
       $.get('/gethead').then((res) => {
-        console.log(res);
         $('#logoText').text(res[0].val)
         $('#blogLogoimg').attr('src', res[0].blogLogo)
         window.localStorage.setItem('logoText', res[0].val)
@@ -86,7 +85,6 @@
     }
 
     $.get('/cateCount').then(res => {
-      console.log(res);
       let cates = [];
       res.forEach(item => {
         let value = item.total;

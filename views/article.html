@@ -129,10 +129,8 @@
             // $('#article').on('$(td)')
             table.on('tool(article)', function (obj) {
                 let { id, pic } = obj.data;
+                //删除
                 if (obj.event === 'del') {
-                    // console.log(obj.data);
-                    console.log(id);
-                    console.log(pic);
                     layer.confirm('真的删除行么', async function (index) {
                         obj.del();
                         layer.close(index);
@@ -142,15 +140,14 @@
                             data: { id, pic }
                         }).then((res) => {
                             if (res.code === 10000) {
-                                console.log(res);
                                 applyTable()
                                 layer.msg(res.message)
                             }
                         })
                     });
+
+                    //查看详情
                 } else if (obj.event === 'examine') {
-                    // console.log(obj.data);
-                    // let { id } = obj.data;
                     layer.open({
                         type: 1,
                         title: false,
@@ -163,20 +160,16 @@
                                         <div>${obj.data.content}</div>
                                 </div>`
                     });
+                    //编辑
                 } else if (obj.event === 'edit') {
                     location.href = `/editArticle?id=${id}`
                 }
             });
-
+            // 添加
             $('#addArt').click(function () {
                 location.href = '/Art';
             })
-            // $('#keyword').on('keyup', function () {
-            //     let keyword = $("#keyword").val()
-            //     table.reload('article', {
-            //         where: { keyword } //设定异步数据接口的额外参数
-            //     });
-            // })
+            //搜索加数据重载
             $('#search').on('click', function () {
                 let keyword = $("#keyword").val()
                 table.reload('article', {

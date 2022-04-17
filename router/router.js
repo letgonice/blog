@@ -64,4 +64,5 @@ router.post('/addArt', upload.single('photo'), articleController.addArt)
 router.get('/editArticle',articleController.editArticle)
 router.post('/editArtCon',upload.single('photo'),articleController.editArtCon)
 router.get('/echoArticle',articleController.echoArticle)
+
 module.exports = router
