@@ -5,7 +5,6 @@ let articleController = {};
 let viewsPath = path.join(path.dirname(__dirname), '/views')
 let fs = require('fs');
 let moment  =require('moment')
-let port = 3400
 
 articleController.article = (req,res)=> {
     res.render(`${viewsPath}/article.html`)
@@ -48,7 +47,7 @@ data = data.map((item) => {
         cate_name,
         username
     } = item;
-    item.statusText = status == 1 ? '审核通过' : "审核中"
+    item.statusText = status == 1 ? '审核通过' : '审核中'
     item.cate_name = cate_name || '未分类'
     item.username = username || '匿名者'
     item.add_date = moment(add_date).format('YYYY-MM-DD HH:mm:ss')
@@ -59,7 +58,7 @@ res.json({
     count,
     data,
     code: 0,
-    msg: "sucess"
+    msg: 'sucess'
 })
 
 
@@ -126,6 +125,7 @@ let result = await query(sql)
 if (result.affectedRows > 0) {
     let paths = path.join(path.dirname(__dirname),pic)
     fs.unlink(paths, (err) => {
+        console.log(err);
     })
     res.json(succeedData)
 } else {
@@ -134,9 +134,8 @@ if (result.affectedRows > 0) {
 }
 //添加文章
 articleController.Art = async (req, res) => {
-res.render(`addArt.html`)
+res.render('addArt.html')
 }
-
 articleController.addArt = async (req, res) => {
 let author = req.session.userLogin[0].id
 let { title, classify, status, content } = req.body;
@@ -162,7 +161,7 @@ if (req.file) {
         }
     })
     let sql = `insert into article(title,content,author ,status,pic,add_date,cate_id)values('${title}','${content}','${author}','${status}','${newName}','${add_date}',${classify})`
-    let rows = await query(sql);
+    await query(sql);
     res.json(succeedData)
 } else {
     res.json(errData)
@@ -180,7 +179,7 @@ articleController.echoArticle = async (req, res) => {
 }
 
 articleController.editArtCon = async (req, res) => {
-    let {title,content,status,cate_id,oldpic ,id} = req.body;
+    let {title,content,status,oldpic ,id} = req.body;
     let succeedData = {
         code: 10000,
         message:'成功'

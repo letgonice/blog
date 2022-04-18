@@ -2,7 +2,7 @@ let query = require('../model/query.js')
 const FrontController = {};
 
 FrontController.cate = async (req, res) => {
-    let sql = `select cate_name,cate_id from category`
+    let sql = 'select cate_name,cate_id from category'
     let result = await query(sql)
     res.json(result)
 }

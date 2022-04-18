@@ -1,6 +1,5 @@
 const  query  = require('../model/query');
 let path =require('path');
-const { response } = require('express');
 let loginController = {};
 let md5 = require('md5')
 let viewsPath = path.join(path.dirname(__dirname), '/views')
@@ -50,7 +49,7 @@ loginController.ispassword = async (req, res) => {
     let { id } = req.params;
     let {password} = req.body;
     password = md5(`${password}${password_secret}`)
-    sql = `select password from users where id=${id} `
+   let sql = `select password from users where id=${id} `
     let rows = await query(sql)
     let succeedData = {
         code: 1,
@@ -74,10 +73,9 @@ loginController.updpasswod = async (req, res) => {
     newpassword = md5(`${newpassword}${password_secret}`)
     let sql = `update users set password ='${newpassword}'where id= ${id}`
     let result = await query(sql)
-    let succeedData = {
-        code: 1,
-        message:'成功'
-    }
+
+
+
     let errData = {
         code: 0,
         message:'失败'

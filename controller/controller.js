@@ -4,19 +4,17 @@ let controller = {};
 //托管静态页面
 let viewsPath = path.join(path.dirname(__dirname), '/views')
 let fs = require('fs');
-let moment  =require('moment')
-let port  =3400
 //博客首页
 controller.index = (req, res) => {
-    res.render(`index.html`)
+    res.render('index.html')
 }
 //博客登录页
 controller.login = (req, res) => {
     // res.sendFile(`${viewsPath}/login.html`)
-    res.render(`login.html`)
+    res.render('login.html')
 }
 controller.category = (req,res)=> {
-    res.render(`category.html`)
+    res.render('category.html')
 }
 // controller.article = (req,res)=> {
 //     res.render(`${viewsPath}/article.html`)
@@ -47,13 +45,11 @@ controller.deleteCate = async (req, res) => {
     } else {
         res.json({
             code:1,
-            message:"删除失败"
+            message:'删除失败'
         }) 
     }
 }
-controller.delline = async (req, res) => {
-    console.log(req.body);
-}
+
 controller.updCate = async (req, res) => {
     console.log(req.body);
     let { cate_id,cate_name,orderBy } = req.body
@@ -101,7 +97,7 @@ controller.addcatelist = async (req, res) => {
 }
 // 系统设置逻辑
 controller.gosystem = async (req, res) => {
-    res.render(`systemsetup.html`)
+    res.render('systemsetup.html')
 }
 controller.gethead = async (req, res) => {
     let sql = 'select * from settings'
@@ -131,7 +127,7 @@ controller.updblogname = async (req, res) => {
             }
         })
         sql = `update settings set val = '${val}',blogLogo='${newName}'where id = ${id}`;
-        sql2 = `select blogLogo from settings where id = ${id}`
+       let sql2 = `select blogLogo from settings where id = ${id}`
         let result  = await query(sql2)
         // let sql = `insert into article(title,content,author ,status,pic,add_date,cate_id)values('${title}','${content}','${author}','${status}','${newName}','${add_date}',${classify})`
         let rows = await query(sql);
@@ -231,11 +227,9 @@ controller.updUser = async (req, res) => {
         }
     }
 }
-
 controller.cateCount = async (req, res) => {
-    let sql = `select count(t1.id)total,t2.cate_name from article t1 left join category t2 on t1.cate_id = t2.cate_id group by t1.cate_id`;
+    let sql = 'select count(t1.id)total,t2.cate_name from article t1 left join category t2 on t1.cate_id = t2.cate_id group by t1.cate_id';
     let rows = await query(sql)
     res.json(rows)
 }
-
 module.exports = controller;
